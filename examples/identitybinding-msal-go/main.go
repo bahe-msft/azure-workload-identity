@@ -21,29 +21,33 @@ func main() {
 
 	// Azure AD Workload Identity webhook will inject the following env vars
 	// 	AZURE_CLIENT_ID with the clientID set in the service account annotation
-	// 	AZURE_TENANT_ID with the tenantID set in the service account annotation. If not defined, then
-	// 	the tenantID provided via azure-wi-webhook-config for the webhook will be used.
 	// 	AZURE_FEDERATED_TOKEN_FILE is the service account token path
-	// 	AZURE_AUTHORITY_HOST is the AAD authority hostname
+	// 	AZURE_KUBERNETES_TOKEN_ENDPOINT is the identity binding token endpoint
+	// 	AZURE_KUBERNETES_SNI_NAME is the SNI name for token endpoint
+	// 	AZURE_KUBERNETES_CA_FILE is the CA file for the token endpoint
 	clientID := os.Getenv("AZURE_CLIENT_ID")
-	tenantID := os.Getenv("AZURE_TENANT_ID")
 	tokenFilePath := os.Getenv("AZURE_FEDERATED_TOKEN_FILE")
-	authorityHost := os.Getenv("AZURE_AUTHORITY_HOST")
+	tokenEndpoint := os.Getenv("AZURE_KUBERNETES_TOKEN_ENDPOINT")
+	sni := os.Getenv("AZURE_KUBERNETES_SNI_NAME")
+	caFile := os.Getenv("AZURE_KUBERNETES_CA_FILE")
 
 	if clientID == "" {
 		klog.Fatal("AZURE_CLIENT_ID environment variable is not set")
 	}
-	if tenantID == "" {
-		klog.Fatal("AZURE_TENANT_ID environment variable is not set")
-	}
 	if tokenFilePath == "" {
 		klog.Fatal("AZURE_FEDERATED_TOKEN_FILE environment variable is not set")
 	}
-	if authorityHost == "" {
-		klog.Fatal("AZURE_AUTHORITY_HOST environment variable is not set")
+	if tokenEndpoint == "" {
+		klog.Fatal("AZURE_KUBERNETES_TOKEN_ENDPOINT environment variable is not set")
+	}
+	if sni == "" {
+		klog.Fatal("AZURE_KUBERNETES_SNI_NAME environment variable is not set")
+	}
+	if caFile == "" {
+		klog.Fatal("AZURE_KUBERNETES_CA_FILE environment variable is not set")
 	}
 
-	cred, err := newClientAssertionCredential(tenantID, clientID, authorityHost, tokenFilePath, nil)
+	cred, err := newClientAssertionCredential(clientID, tokenEndpoint, sni, caFile, tokenFilePath, nil)
 	if err != nil {
 		klog.Fatal(err)
 	}
