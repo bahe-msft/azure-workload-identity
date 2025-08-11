@@ -5,20 +5,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
 	"k8s.io/klog/v2"
 )
 
-func main() {
-	keyvaultURL := os.Getenv("KEYVAULT_URL")
-	if keyvaultURL == "" {
-		klog.Fatal("KEYVAULT_URL environment variable is not set")
-	}
-	secretName := os.Getenv("SECRET_NAME")
-	if secretName == "" {
-		klog.Fatal("SECRET_NAME environment variable is not set")
-	}
-
+func createCredentialFromEnv() (azcore.TokenCredential, error) {
 	// Azure AD Workload Identity webhook will inject the following env vars
 	// 	AZURE_CLIENT_ID with the clientID set in the service account annotation
 	// 	AZURE_FEDERATED_TOKEN_FILE is the service account token path
@@ -49,7 +42,38 @@ func main() {
 
 	cred, err := newClientAssertionCredential(clientID, tokenEndpoint, sni, caFile, tokenFilePath, nil)
 	if err != nil {
-		klog.Fatal(err)
+		return nil, err
+	}
+	return cred, nil
+}
+
+func createCredentialFromSDK() (azcore.TokenCredential, error) {
+	return azidentity.NewWorkloadIdentityCredential(nil)
+}
+
+func main() {
+	keyvaultURL := os.Getenv("KEYVAULT_URL")
+	if keyvaultURL == "" {
+		klog.Fatal("KEYVAULT_URL environment variable is not set")
+	}
+	secretName := os.Getenv("SECRET_NAME")
+	if secretName == "" {
+		klog.Fatal("SECRET_NAME environment variable is not set")
+	}
+
+	var cred azcore.TokenCredential
+	if os.Getenv("USE_SDK_CREDENTIAL") == "true" {
+		var err error
+		cred, err = createCredentialFromSDK()
+		if err != nil {
+			klog.Fatal(err)
+		}
+	} else {
+		var err error
+		cred, err = createCredentialFromEnv()
+		if err != nil {
+			klog.Fatal(err)
+		}
 	}
 
 	// initialize keyvault client
