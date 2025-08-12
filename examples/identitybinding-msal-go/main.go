@@ -68,12 +68,14 @@ func main() {
 		if err != nil {
 			klog.Fatal(err)
 		}
+		klog.Info("Using SDK Workload Identity Credential")
 	} else {
 		var err error
 		cred, err = createCredentialFromEnv()
 		if err != nil {
 			klog.Fatal(err)
 		}
+		klog.Info("Using custom Client Assertion Credential")
 	}
 
 	// initialize keyvault client

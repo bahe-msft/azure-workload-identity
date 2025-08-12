@@ -24,4 +24,4 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 )
 
-replace github.com/Azure/azure-sdk-for-go/sdk/azidentity => github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.11.1-0.20250811211210-f7ac5a70412a
+replace github.com/Azure/azure-sdk-for-go/sdk/azidentity => github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.11.1-0.20250811231238-0ec7258063bb
