@@ -4,7 +4,7 @@ go 1.23.10
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.2
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.11.1-0.20250811211210-f7ac5a70412a
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.10.1
 	github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets v0.12.0
 	k8s.io/klog/v2 v2.130.1
 )
@@ -24,4 +24,4 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 )
 
-replace github.com/Azure/azure-sdk-for-go/sdk/azidentity => github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.11.1-0.20250811231238-0ec7258063bb
+replace github.com/Azure/azure-sdk-for-go/sdk/azidentity => ../../../azure-sdk-for-go/sdk/azidentity
